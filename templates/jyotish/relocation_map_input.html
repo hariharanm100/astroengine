@@ -84,7 +84,7 @@
                                         <input list="persons_list_autocomplete" autocomplete="off" type="text" class="form-control person_name_field" id="inputName1" name="inputName1" placeholder="Name" maxlength=200 required>
                                     </div>
                                     <div class="col-3 p-0">
-                                        <label class="mb-0">Birthdate</label>
+                                        <label class="mb-0">BirthDate</label>
                                         <input type="date" class="form-control" id="date" name="date" min="1000-01-01" max="2029-12-31" required>
                                     </div>
                                     <div class="col-3">
@@ -205,7 +205,7 @@
                                         'name': name
                                     },
                                     dataType: 'json',
-                                    success: function (data) {
+                                    success: function (data) { 
                                         $('#persons_list_autocomplete').html(data.persons);
                                     },
                                     error: function (data) {

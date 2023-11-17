@@ -38,9 +38,21 @@ class birthchartdb(models.Model):
     time_zone = models.CharField(max_length=100,blank=True,null=True)
     timeZoneId = models.CharField(max_length=100,blank=True,null=True)
     timeZoneName = models.CharField(max_length=100,blank=True,null=True)
+    user = models.CharField(max_length=100,blank=True,null=True,default='')
+    Su = models.CharField(max_length=100,blank=True,null=True,default='')
+    Mo= models.CharField(max_length=100,blank=True,null=True,default='')
+    Me= models.CharField(max_length=100,blank=True,null=True,default='')
+    Ma= models.CharField(max_length=100,blank=True,null=True,default='')
+    Ju= models.CharField(max_length=100,blank=True,null=True,default='')
+    Ve= models.CharField(max_length=100,blank=True,null=True,default='')
+    Sa= models.CharField(max_length=100,blank=True,null=True,default='')
+    Ra= models.CharField(max_length=100,blank=True,null=True,default='')
+    Ke= models.CharField(max_length=100,blank=True,null=True,default='')
+    As= models.CharField(max_length=100,blank=True,null=True,default='')
 
     def __str__(self):
         return self.fullname
+
 class PersonDegree(models.Model):
     personName = models.CharField(max_length=100)
     suDegree = models.FloatField()

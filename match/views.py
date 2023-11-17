@@ -16,7 +16,8 @@ from django.utils.decorators import method_decorator
 from django.utils.html import escape
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from persontoperson.models import birthchartdb
+import datetime
 from .my_scripts.NO_NEED_f50000 import data as data_50
 
 def get_degrees(request):
@@ -32,14 +33,13 @@ def get_degrees(request):
             deg = -deg
         return deg, mnt
 
-    person = Person.objects.filter(name=name, bplace=bplace)
+    person = birthchartdb.objects.filter(fullname=name, place_of_birth=bplace)
     if person:
         person = person[0]
         if person.Su == '':
             KEY = 'AIzaSyDpksPTT2PW4ZOSlzltN0QLV4zxT6U09pA'
             api = googlemaps.Client(key=KEY)
             degs = bdate_time_place_to_degs(api, bdate, btime, bplace)
-
             context = {
                 'Su': round(degs[0], 4),
                 'Mo': round(degs[1], 4),
@@ -291,7 +291,6 @@ class RelocationMap3dInputView(LoginRequiredMixin,TemplateView):
         context = {
             'sessions': []
         }
-        
         return render(request, 'jyotish/relocation_map_input.html', context=context)
 
 
@@ -338,7 +337,7 @@ class RelocationMap3dView(TemplateView):
                         #
                         KEY = 'AIzaSyDpksPTT2PW4ZOSlzltN0QLV4zxT6U09pA'
                         api = googlemaps.Client(key=KEY)
-                        person = Person.objects.filter(name=name, bplace=pplace)[0]
+                        person = birthchartdb.objects.filter(fullname=name, place_of_birth=pplace)[0]
                         person.Su = request.GET['CD_Su']
                         person.Mo = request.GET['CD_Mo']
                         person.Me = request.GET['CD_Me']
@@ -547,8 +546,11 @@ class DataInput3View(TemplateView):
 def ajax_validate_person_name(request):  # finds persons with <name> like provided (for autocomplete of names)
     name = request.GET.get('name', None)
     persons = ''
-    for p in Person.objects.filter(name__contains=name)[:80]:
-        persons += '<option>{} | {} | {} | {} | {}</p>'.format(p.name, p.bdate, p.btime, p.bplace, p.gender)
+    print(name)
+    for p in birthchartdb.objects.filter(fullname__contains=name)[:80]:
+        print(p)
+        
+        persons += '<option>{} | {} | {} | {} | {}</p>'.format(p.fullname, p.date_of_birth, p.time_of_birth, p.place_of_birth, "Male")
     data = {
         'persons': persons
     }
@@ -559,7 +561,7 @@ def ajax_validate_person_name_admin(request):
         'sessions': ''
     }
     name = request.GET.get('name', None)
-    q = Person.objects.get(name=name)
+    q = birthchartdb.objects.get(fullname=name)
     if q:
         for i in MapSession.objects.filter(user=q.user):
             d = str(i.date).split('.')[0] + str(i.date)[-5:]
@@ -569,25 +571,26 @@ def ajax_validate_person_name_admin(request):
 def ajax_add_person(request):  # adds a new person with data provided (if not already exists)
     name = request.GET.get('name', None)
     bdate = request.GET.get('bdate', None)
+    bdate = datetime.datetime.strptime(bdate, '%Y-%m-%d')
+    bdate = bdate.date()
     btime = request.GET.get('btime', None)
     bplace = request.GET.get('bplace', None)
     gender = request.GET.get('gender', None)
-
+    
     data = {
         'state': '1'
     }
 
-    if Person.objects.filter(name=name).count() > 0:
-        if Person.objects.filter(name=name, bdate=bdate, btime=btime, bplace=bplace, gender=gender).count() > 0:
+    if birthchartdb.objects.filter(fullname=name).count() > 0:
+        if birthchartdb.objects.filter(fullname=name, date_of_birth=bdate, time_of_birth=btime, place_of_birth=bplace).count() > 0:
             data['state'] = ''
 
     if data['state'] == '1':
-        person = Person()
-        person.name = name
-        person.bdate = bdate
-        person.btime = btime
-        person.bplace = bplace
-        person.gender = gender
+        person = birthchartdb()
+        person.fullname = name
+        person.date_of_birth = bdate
+        person.time_of_birth = btime
+        person.place_of_birth = bplace
         person.save()
     return JsonResponse(data)
 

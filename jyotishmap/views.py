@@ -262,6 +262,7 @@ def ajax_add_person(request):  # adds a new person with data provided (if not al
 
 # AJAX based functions
 def ajax_validate_person_name(request):  # finds persons with <name> like provided (for autocomplete of names)
+
     name = request.GET.get('name', None)
     persons = ''
     for p in Person.objects.filter(name__contains=name)[:80]:
@@ -276,6 +277,7 @@ def ajax_validate_person_name_admin(request):
     data = {
         'sessions': ''
     }
+
     name = request.GET.get('name', None)
     q = Person.objects.get(name=name)
     if q:
