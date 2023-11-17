@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
 from django.http import JsonResponse
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .my_scripts.NO_NEED_f50000 import data as data_50
 
@@ -285,7 +285,8 @@ def ajax_delete_user(request):
     return JsonResponse({})
 
 
-class RelocationMap3dInputView(TemplateView):
+class RelocationMap3dInputView(LoginRequiredMixin,TemplateView):
+    login_url = '/users/login/'
     def get(self, request, **kwargs):
         context = {
             'sessions': []
